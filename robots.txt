@@ -1,0 +1,5 @@
+# Le site n'est pas encore à référencer (voir la balise « robots » dans index.html).
+# Le CV et les images ne doivent pas être lus par les moteurs de recherche.
+User-agent: *
+Disallow: /cv-lucas-marrec.pdf
+Disallow: /img/
