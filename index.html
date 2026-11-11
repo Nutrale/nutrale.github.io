@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="fr" data-mode="com">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lucas Marrec · étudiant en communication et chanteur guitariste</title>
+  <meta name="description" content="Portfolio de Lucas Marrec : étudiant en communication (Master ISCOM, BUT MMI) et chanteur guitariste.">
+  <link rel="icon" type="image/png" href="img/icone-com.png" id="icone">   <!-- l'icône et le titre de l'onglet changent avec la face (js/main.js) -->
+
+  <!-- POLICE : FF Providence Sans, envoyée aux visiteurs par le projet Web Adobe Fonts « Portfolio » (Regular et Bold) -->
+  <link rel="preconnect" href="https://use.typekit.net" crossorigin>
+  <link rel="stylesheet" href="https://use.typekit.net/mpu6bdi.css">
+  <link rel="stylesheet" href="css/style.css?v=101">
+  <script>
+    // Ouvre directement la face scène avec un lien du type …/index.html?mode=scene
+    if (new URLSearchParams(location.search).get('mode') === 'scene') document.documentElement.dataset.mode = 'scene';
+  </script>
+</head>
+<body>
+  <a class="evitement" href="#contenu">Aller au contenu</a>
+
+  <!-- ===== BARRE DU HAUT ===== -->
+  <header class="barre">
+    <a class="marque" href="#accueil" aria-label="Lucas Marrec, retour en haut"><span class="logo" aria-hidden="true"></span></a>
+    <nav class="menu" aria-label="Menu">
+      <span class="face-com"><a href="#a-propos">À propos</a><a href="#projets">Projets</a><a href="#parcours">Parcours</a><a href="#contact">Contact</a></span>
+      <span class="face-scene"><a href="#live">Live</a><a href="#dates">Dates</a><a href="#booking">Booking</a></span>
+    </nav>
+    <button class="son caps face-scene" type="button" aria-pressed="true" title="Activer ou couper le son de l'interrupteur">Son</button>
+    <button class="ouvrir-menu caps" type="button" aria-haspopup="dialog" aria-controls="menu-mobile" aria-expanded="false"><span>Menu</span><svg viewBox="0 0 22 14" aria-hidden="true"><path d="M1.5 3.2c6.2-.7 12.6-.4 19 .2M1.5 10.6c6.4.6 12.8.3 19-.3"/></svg></button>
+  </header>
+
+  <!-- Menu sur téléphone et tablette (sous 900 px, le menu du haut est masqué) : plein écran, à tes couleurs -->
+  <dialog class="menu-mobile" id="menu-mobile" aria-label="Menu">
+    <div class="menu-mobile-haut"><span class="logo" aria-hidden="true"></span><button class="fermer-menu caps" type="button"><span>Fermer</span><svg viewBox="0 0 22 14" aria-hidden="true"><path d="M5.5 1.5c3.6 3.4 7.4 7.2 11 11M16.6 1.6c-3.8 3.4-7.4 7.1-11.1 10.8"/></svg></button></div>
+    <nav class="menu-mobile-liens" aria-label="Rubriques" tabindex="-1" autofocus>
+      <span class="face-com"><a href="#a-propos">À propos</a><a href="#projets">Projets</a><a href="#parcours">Parcours</a><a href="#contact">Contact</a></span>
+      <span class="face-scene"><a href="#live">Live</a><a href="#dates">Dates</a><a href="#booking">Booking</a></span>
+    </nav>
+    <button class="menu-mobile-bascule" type="button"><span class="face-com">et côté musique ? →</span><span class="face-scene">et côté com ? →</span></button>
+  </dialog>
+
+  <main id="contenu">
+    <!-- Le sentier : un trait qui part de la montagne et descend toute la page -->
+    <svg class="sentier" id="sentier" aria-hidden="true"><path class="chemin"/><g class="etapes"></g><g class="pointe">
+      <!-- bout du sentier : un crayon côté com, un médiator côté scène (la pointe est en 0,0 et regarde vers la droite) -->
+      <g class="face-com"><path d="M-27 -3.6 H-8 L0 0 L-8 3.6 H-27 Z M-23 -3.6 V3.6 M-8 -3.6 V3.6"/><path class="mine" d="M-2.8 -1.3 L0 0 L-2.8 1.3 Z"/></g>
+      <g class="face-scene"><path d="M0 0 C -5 -5, -13 -10, -18 -7 C -22 -4, -22 4, -18 7 C -13 10, -5 5, 0 0 Z"/></g>
+    </g></svg>
+
+    <!-- ===== ACCUEIL ===== -->
+    <section class="accueil" id="accueil">
+      <div class="accueil-texte">
+        <p class="caps face-com">Étudiant en communication</p>
+        <p class="caps face-scene">Chanteur · guitariste</p>
+        <h1>Lucas Marrec</h1>
+        <p class="caps" aria-hidden="true">&nbsp;</p><!-- ligne volontairement vide : garde l'espace sous le nom -->
+
+        <div class="bascule">
+          <span class="caps libelle-com">Étudiant en com</span>
+          <span class="pivot">
+            <button class="interrupteur" type="button" role="switch" aria-checked="false" aria-label="Mode chanteur guitariste"><i></i></button>
+            <!-- Note manuscrite fléchée vers l'interrupteur -->
+            <p class="note" aria-hidden="true">
+              <svg class="fleche" viewBox="0 0 90 64"><path pathLength="1" d="M84 58 C 64 56, 34 46, 14 10"/><path pathLength="1" d="M14 10 L 13 24"/><path pathLength="1" d="M14 10 L 27 15"/></svg>
+              <span class="face-com">clique, je chante aussi</span>
+              <span class="face-scene">et je fais aussi de la com</span>
+            </p>
+          </span>
+          <span class="caps libelle-scene">Chanteur guitariste</span>
+        </div>
+      </div>
+      <svg class="trait" aria-hidden="true"></svg>
+      <!-- Face scène : six cordes de guitare à gratter (souris ou doigt) -->
+      <div class="cordes face-scene" id="cordes" aria-hidden="true">
+        <svg></svg>
+      </div>
+    </section>
+
+
+    <!-- =========================================================
+         FACE COM (interrupteur éteint)
+         ========================================================= -->
+
+    <section class="face-com bloc" id="a-propos">
+      <div class="deux-colonnes">
+        <div class="photo portrait"><span class="caps">Ton portrait</span></div>
+        <div class="texte">
+          <p class="caps">À propos</p>
+          <h2>Moi, c'est Lucas</h2>
+          <p>Je suis originaire de Porto-Vecchio. J'ai fait un BUT Métiers du multimédia et de l'internet (MMI) à l'IUT de Corse, obtenu en 2025 avec mention assez bien&nbsp;: une formation pluridisciplinaire où j'ai appris le design graphique sur la suite Adobe, la photo, la vidéo et le développement web.</p>
+          <p>Je suis aujourd'hui à l'ISCOM Paris&nbsp;: après un Master&nbsp;1 Événementiel, influence et réputation, je me spécialise cette année en Master&nbsp;2 Communication digitale, social media et community management, en alternance chez Capstan Avocats comme chargé de communication et graphisme.</p>
+          <p class="caps outils">Illustrator · Photoshop · Premiere · Lightroom · Figma · Canva · Aero</p>
+          <a class="bouton" href="cv-lucas-marrec.pdf" download="CV Lucas Marrec.pdf" type="application/pdf">Télécharger mon CV →</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="face-com bloc" id="projets">
+      <div class="entete"><p class="caps">Projets</p><h2>Sélection de projets</h2></div>
+      <ol class="programme-projets" id="liste-projets"><!-- rempli automatiquement depuis js/projets.js --></ol>
+      <img class="apercu" id="apercu" alt="" aria-hidden="true">
+    </section>
+
+    <section class="face-com bloc" id="parcours">
+      <div class="entete"><p class="caps">Parcours</p><h2>De Corte à Paris</h2></div>
+      <ol class="liste">
+        <li><span class="date"><small>2026–2027</small><b>01</b></span><span class="intitule">Master 2<small>ISCOM Paris</small><em>Communication digitale, social media et community management.</em></span></li>
+        <li><span class="date"><small>2025–2026</small><b>02</b></span><span class="intitule">Master 1<small>ISCOM Paris</small><em>Événementiel, influence et réputation.</em></span></li>
+        <li><span class="date"><small>2022–2025</small><b>03</b></span><span class="intitule">BUT MMI<small>Università di Corsica Pasquale Paoli</small><em>Métiers du multimédia et de l'internet, parcours création numérique.<br>Mention assez bien.</em></span></li>
+      </ol>
+    </section>
+
+    <!-- Bandeau qui défile (face com), avant le contact -->
+    <div class="defile face-com" aria-hidden="true">
+      <div class="piste"><span>Stratégie · Réseaux sociaux · Identité visuelle · Packaging · Affiche · Illustration · Vidéo ·&nbsp;</span><span>Stratégie · Réseaux sociaux · Identité visuelle · Packaging · Affiche · Illustration · Vidéo ·&nbsp;</span></div>
+    </div>
+
+    <section class="face-com bloc centre" id="contact">
+      <p class="caps">Contact</p>
+      <h2>Écrivons-nous</h2>
+      <p class="chapeau">Alternance, stage, projet freelance : lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      <a class="bouton" href="mailto:lucmarrec2a@gmail.com">lucmarrec2a@gmail.com →</a>
+      <p class="caps liens"><a href="https://www.instagram.com/lucas.m2a/" target="_blank" rel="noopener">Instagram</a> · <a href="https://www.linkedin.com/in/lucas-marrec-96a44332b/" target="_blank" rel="noopener">LinkedIn</a></p>
+    </section>
+
+    <!-- =========================================================
+         FACE SCÈNE (interrupteur allumé)
+         ========================================================= -->
+
+    <section class="face-scene bloc" id="live">
+      <div class="entete"><p class="caps">En live</p><h2>Sur scène</h2></div>
+      <!-- Carrousel : on l'attrape à la souris et on le fait glisser (au doigt ou au pavé tactile, il défile tout seul).
+           Une photo = une ligne <figure class="cliche">. Pour en ajouter une : mets l'image dans img/live/ (07.jpg…),
+           copie une ligne, change src, alt (la description de la photo) et la légende : le lieu dans <b>, la date dans <small>. -->
+      <div class="carrousel" id="carrousel" tabindex="0" role="region" aria-label="Photos live, à faire défiler">
+        <div class="rail">
+          <figure class="cliche"><img class="photo" src="img/live/01.jpg" alt="Lucas chante et joue de la guitare sur une terrasse fleurie" draggable="false" loading="lazy"><figcaption class="legende"><b>Fiori Cala Rossa</b><small>Sam 01 août · Cala Rossa</small></figcaption></figure>
+          <figure class="cliche"><img class="photo" src="img/live/02.jpg" alt="Concert de nuit sous les guirlandes lumineuses, le public chante" draggable="false" loading="lazy"><figcaption class="legende"><b>Fiori Cala Rossa</b><small>Sam 01 août · Cala Rossa</small></figcaption></figure>
+          <figure class="cliche"><img class="photo" src="img/live/03.jpg" alt="La scène installée avant le concert, au coucher du soleil" draggable="false" loading="lazy"><figcaption class="legende"><b>U Spuntinu Novu</b><small>Lun 03 août · Saint-Cyprien</small></figcaption></figure>
+          <figure class="cliche"><img class="photo" src="img/live/04.jpg" alt="Lucas joue de la guitare, le regard sur les cordes" draggable="false" loading="lazy"><figcaption class="legende"><b>Campo di Mare</b><small>Mar 04 août · Pezza Cardo</small></figcaption></figure>
+          <figure class="cliche"><img class="photo" src="img/live/05.jpg" alt="Mariage de nuit : les invités chantent et rient face à Lucas" draggable="false" loading="lazy" style="object-position: 65% 50%"><figcaption class="legende"><b>Ambassador</b><small>Mer 05 août · Palombaggia</small></figcaption></figure>
+          <figure class="cliche"><img class="photo" src="img/live/06.jpg" alt="Lucas joue en plein air, entre les arbres" draggable="false" loading="lazy"><figcaption class="legende"><b>Prima Stella</b><small>Jeu 06 août · Route de Cala Rossa</small></figcaption></figure>
+        </div>
+      </div>
+      <div class="carrousel-pied" aria-hidden="true"><span class="caps compteur"><b>01</b>/ <small>06</small></span><span class="progression"><i></i></span><span class="caps indice">Glisse →</span></div>
+      <!-- Sous les photos : Instagram et téléphone, en notes manuscrites -->
+      <div class="notes-contact">
+        <a class="note-contact" href="https://www.instagram.com/lucas.m2a/" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.5"/><circle cx="12" cy="12" r="4.3"/><circle class="point" cx="17.4" cy="6.6" r="1"/></svg>
+          <span>la suite en stories : <b>@lucas.m2a</b></span>
+        </a>
+        <a class="note-contact" href="tel:+33689698103">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3.5h2.6l1.6 4.4-2.2 1.4a11.5 11.5 0 0 0 6.1 6.1l1.4-2.2 4.4 1.6v2.6a2 2 0 0 1-2.2 2A16 16 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg>
+          <span>pour m'appeler : <b>06 89 69 81 03</b></span>
+        </a>
+      </div>
+    </section>
+
+    <section class="face-scene bloc" id="dates">
+      <div class="entete"><p class="caps">Août</p><h2>Programme <br>de la semaine</h2></div>
+      <ol class="liste">
+        <li><span class="date"><small>Sam</small><b>01</b></span><span class="intitule">Fiori Cala Rossa<small>Cala Rossa</small></span></li>
+        <li><span class="date"><small>Lun</small><b>03</b></span><span class="intitule">U Spuntinu Novu<small>Saint-Cyprien</small></span></li>
+        <li><span class="date"><small>Mar</small><b>04</b></span><span class="intitule">Campo di Mare<small>Pezza Cardo</small></span></li>
+        <li><span class="date"><small>Mer</small><b>05</b></span><span class="intitule">Ambassador<small>Palombaggia</small></span></li>
+        <li><span class="date"><small>Jeu</small><b>06</b></span><span class="intitule">Prima Stella<small>Route de Cala Rossa</small></span></li>
+        <li><span class="date"><small>Ven</small><b>07</b></span><span class="intitule">Prima Stella<small>Route de Cala Rossa</small></span></li>
+        <li><span class="date"><small>Sam</small><b>08</b></span><span class="intitule">Fiori Cala Rossa<small>Cala Rossa</small></span></li>
+      </ol>
+    </section>
+
+    <!-- Bandeau qui défile (face scène), avant le booking -->
+    <div class="defile face-scene" aria-hidden="true">
+      <div class="piste"><span>Corse du Sud · Été · Bars · Restaurants · Mariages · Soirées privées · Guitare et voix ·&nbsp;</span><span>Corse du Sud · Été · Bars · Restaurants · Mariages · Soirées privées · Guitare et voix ·&nbsp;</span></div>
+    </div>
+
+    <section class="face-scene bloc centre" id="booking">
+      <p class="caps">Booking</p>
+      <h2>Réserver une date</h2>
+      <!-- Formulaire de demande de date. En ligne sur Netlify, les demandes arrivent dans Netlify (et par e-mail si tu
+           l'actives, voir LISEZ-MOI) ; ailleurs, l'envoi ouvre un e-mail déjà rempli adressé à lucmarrec2a@gmail.com. -->
+      <form class="reservation" id="reservation" name="booking" method="POST" enctype="multipart/form-data" data-netlify="true" netlify-honeypot="bot-field">
+        <input type="hidden" name="form-name" value="booking">
+        <!-- rempli par js/main.js à l'envoi : l'invitation calendrier (.ics) de la date demandée -->
+        <input type="file" name="invitation" accept=".ics,text/calendar" hidden tabindex="-1" aria-hidden="true">
+        <p hidden><label>Ne pas remplir <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+
+        <fieldset class="types">
+          <legend class="caps">Le type de soirée</legend>
+          <div class="pastilles">
+            <label class="pastille"><input type="radio" name="type" value="Bar" required><span>Bar</span></label>
+            <label class="pastille"><input type="radio" name="type" value="Restaurant"><span>Restaurant</span></label>
+            <label class="pastille"><input type="radio" name="type" value="Mariage"><span>Mariage</span></label>
+            <label class="pastille"><input type="radio" name="type" value="Soirée privée"><span>Soirée privée</span></label>
+            <label class="pastille"><input type="radio" name="type" value="Autre"><span>Autre</span></label>
+          </div>
+        </fieldset>
+
+        <div class="champs">
+          <!-- Date : calendrier maison (celui du navigateur ne se personnalise pas), dessiné par js/main.js -->
+          <div class="champ champ-date" id="champ-date">
+            <label class="caps" for="date-choisie">Date</label>
+            <div class="date-saisie">
+              <input type="text" id="date-choisie" placeholder="Choisir une date" required inputmode="none" autocomplete="off" aria-haspopup="dialog" aria-expanded="false" aria-controls="calendrier">
+              <svg class="icone-cal" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.6 6.6c-.1-1.1.7-1.8 1.7-1.8h11.6c1 0 1.7.7 1.7 1.7v11.6c0 1-.7 1.7-1.7 1.7H6.2c-1 0-1.6-.7-1.6-1.7zM4.7 9.6c5-.2 9.9.1 14.8-.1M8.4 3.1v3.4M15.7 3.1v3.4"/><circle cx="15.2" cy="15" r="1.9"/></svg>
+            </div>
+            <input type="hidden" name="date">
+            <div class="calendrier" id="calendrier" role="dialog" aria-label="Choisir une date" hidden>
+              <div class="cal-tete">
+                <button type="button" class="cal-prec" aria-label="Mois précédent"><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M26 7.6c-7.6-.9-15.4.3-23-.4M8 2.2 2.6 7.1l5.6 5.1"/></svg></button>
+                <p class="cal-mois" aria-live="polite"></p>
+                <button type="button" class="cal-suiv" aria-label="Mois suivant"><svg viewBox="0 0 28 14" aria-hidden="true"><path d="M2 6.4c7.6.9 15.4-.3 23 .4M20 1.8l5.4 4.9-5.6 5.1"/></svg></button>
+              </div>
+              <div class="cal-semaine" aria-hidden="true"><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+              <div class="cal-jours"></div>
+            </div>
+          </div>
+          <label class="champ"><span class="caps">Lieu</span><input type="text" name="lieu" placeholder="Établissement ou ville" required></label>
+          <label class="champ"><span class="caps">Votre nom</span><input type="text" name="nom" autocomplete="name" required></label>
+          <label class="champ"><span class="caps">E-mail</span><input type="email" name="email" autocomplete="email" required></label>
+          <label class="champ"><span class="caps">Téléphone <i>(facultatif)</i></span><input type="tel" name="telephone" autocomplete="tel"></label>
+          <label class="champ large"><span class="caps">Message <i>(facultatif)</i></span><textarea name="message" rows="3" placeholder="Horaires, nombre d'invités, ambiance souhaitée…"></textarea></label>
+        </div>
+
+        <button class="bouton" type="submit">Envoyer la demande →</button>
+        <p class="etat" role="status" aria-live="polite"></p>
+      </form>
+
+      <div class="merci" id="merci" hidden tabindex="-1">
+        <p class="caps">Demande envoyée</p>
+        <p class="chapeau">Merci ! Je reviens vers vous au plus vite pour en parler.</p>
+      </div>
+
+      <p class="caps liens direct">Ou directement : <a href="mailto:lucmarrec2a@gmail.com?subject=Demande%20de%20date">lucmarrec2a@gmail.com</a> · <a href="tel:+33689698103">06 89 69 81 03</a> · en message sur <a href="https://www.instagram.com/lucas.m2a/" target="_blank" rel="noopener">Instagram</a></p>
+      <!-- Sur téléphone, à la place de la ligne ci-dessus : le numéro en grand, l'e-mail et Instagram en dessous -->
+      <div class="direct-mobile">
+        <p class="caps">Pas le temps de remplir&nbsp;?</p>
+        <a class="direct-tel" href="tel:+33689698103"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3.5h2.6l1.6 4.4-2.2 1.4a11.5 11.5 0 0 0 6.1 6.1l1.4-2.2 4.4 1.6v2.6a2 2 0 0 1-2.2 2A16 16 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg>06 89 69 81 03</a>
+        <p class="direct-autres"><a href="mailto:lucmarrec2a@gmail.com?subject=Demande%20de%20date"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M3.8 7l8.2 6 8.2-6"/></svg>par e-mail</a><a href="https://www.instagram.com/lucas.m2a/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.5"/><circle cx="12" cy="12" r="4.3"/><circle class="point" cx="17.4" cy="6.6" r="1"/></svg>sur Instagram</a></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Téléphone, côté musique : réserver ou appeler, toujours sous le pouce (masquée sur l'accueil, le booking et le pied de page) -->
+  <nav class="barre-resa face-scene" aria-label="Réserver ou appeler">
+    <a class="bouton plein" href="#booking">Réserver une date</a>
+    <a class="bouton" href="tel:+33689698103">Appeler</a>
+  </nav>
+
+  <footer class="pied">
+    <div class="pied-dessin">
+      <svg class="trait" aria-hidden="true"></svg>
+      <!-- Fin de page : deux notes manuscrites de part et d'autre de la montagne -->
+      <nav class="fin" aria-label="Fin de page">
+        <a class="mot sommet" href="#accueil"><svg viewBox="0 0 24 34" aria-hidden="true"><path d="M12 32 C 9 23, 15 14, 12 4 M12 4 L 6 11 M12 4 L 18 10"/></svg>retour au sommet</a>
+        <button class="mot autre-face" type="button"><span class="face-com">et côté musique ?</span><span class="face-scene">et côté com ?</span><svg viewBox="0 0 40 20" aria-hidden="true"><path d="M2 12 C 12 7, 24 15, 36 9 M36 9 L 29 4 M36 9 L 30 15"/></svg></button>
+      </nav>
+    </div>
+    <p class="caps liens">Lucas Marrec · 2026<span class="face-scene"> · <a href="https://www.instagram.com/lucas.m2a/" target="_blank" rel="noopener">Instagram</a></span></p>
+  </footer>
+
+  <!-- Fiche projet (s'ouvre au clic sur une vignette) -->
+  <dialog class="fiche" id="fiche" aria-labelledby="fiche-titre">
+    <div class="fiche-barre">
+      <p class="caps fiche-compteur" id="fiche-compteur"></p>
+      <button class="fermer-fiche caps" type="button" data-fermer><span>Fermer</span><svg viewBox="0 0 22 14" aria-hidden="true"><path d="M5.5 1.5c3.6 3.4 7.4 7.2 11 11M16.6 1.6c-3.8 3.4-7.4 7.1-11.1 10.8"/></svg></button>
+    </div>
+    <div class="fiche-corps">
+      <div class="fiche-infos">
+        <p class="caps fiche-categorie" id="fiche-categorie"></p>
+        <h2 id="fiche-titre" tabindex="-1" autofocus></h2>
+        <div class="fiche-texte" id="fiche-texte"></div>
+        <nav class="fiche-nav" aria-label="Autres projets">
+          <button class="fiche-prec" type="button">← Précédent</button>
+          <button class="fiche-suiv" type="button">Suivant →</button>
+        </nav>
+      </div>
+      <div class="fiche-images" id="fiche-images"></div>
+    </div>
+  </dialog>
+
+  <script src="js/projets.js?v=101"></script>
+  <script src="js/main.js?v=101"></script>
+</body>
+</html>
