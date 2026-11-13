@@ -12,7 +12,7 @@
   <!-- POLICE : FF Providence Sans, envoyée aux visiteurs par le projet Web Adobe Fonts « Portfolio » (Regular et Bold) -->
   <link rel="preconnect" href="https://use.typekit.net" crossorigin>
   <link rel="stylesheet" href="https://use.typekit.net/mpu6bdi.css">
-  <link rel="stylesheet" href="css/style.css?v=120">
+  <link rel="stylesheet" href="css/style.css?v=124">
   <script>
     // Ouvre directement la face scène avec un lien du type …/index.html?mode=scene
     if (new URLSearchParams(location.search).get('mode') === 'scene') document.documentElement.dataset.mode = 'scene';
@@ -135,10 +135,14 @@
     <!-- Présentation côté musique : une carte blanche posée sur le vert (textes modifiables dans le back-office, onglet Textes) -->
     <section class="face-scene bloc" id="presentation">
       <div class="carte">
-        <p class="caps">Le répertoire</p>
-        <h2>Depuis cinq étés</h2>
-        <p class="chapeau">Depuis cinq ans, chaque été, je chante en guitare-voix dans les bars, les restaurants et les mariages de Corse du Sud. Au programme&nbsp;: du chant corse, de la variété française et des classiques internationaux.</p>
-        <p class="caps outils">Chant corse · Variété française · Internationale</p>
+        <div class="carte-titre">
+          <p class="caps">Le répertoire</p>
+          <h2>Depuis cinq étés</h2>
+        </div>
+        <div class="carte-texte">
+          <p class="chapeau">Cinq saisons de concerts en Corse du Sud, des terrasses de bars aux soirées de mariage, avec une guitare et une voix. Au fil de la soirée, le chant corse croise la variété française et les classiques que tout le monde connaît.</p>
+          <p class="caps outils"><span>Chant corse</span><span>Variété française</span><span>Internationale</span></p>
+        </div>
       </div>
     </section>
 
@@ -300,7 +304,7 @@
   <!-- Le contenu du site (textes, projets, dates, photos) : modifié par le back-office (admin.html).
        Toujours chargé à neuf, pour que les modifications se voient tout de suite. -->
   <script>document.write('<script src="contenu/site.js?t=' + Date.now() + '"><\/script>');</script>
-  <script src="js/contenu.js?v=113"></script>
-  <script src="js/main.js?v=118"></script>
+  <script src="js/contenu.js?v=114"></script>
+  <script src="js/main.js?v=120"></script>
 </body>
 </html>

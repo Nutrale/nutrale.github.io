@@ -650,7 +650,7 @@ window.CONTENU = {
     "etiquette": "Le répertoire",
     "titre": "Depuis cinq étés",
     "paragraphes": [
-      "Depuis cinq ans, chaque été, je chante en guitare-voix dans les bars, les restaurants et les mariages de Corse du Sud. Au programme : du chant corse, de la variété française et des classiques internationaux."
+      "Cinq saisons de concerts en Corse du Sud, des terrasses de bars aux soirées de mariage, avec une guitare et une voix. Au fil de la soirée, le chant corse croise la variété française et les classiques que tout le monde connaît."
     ],
     "repertoire": "Chant corse · Variété française · Internationale"
   },

@@ -119,7 +119,10 @@
     texte('#presentation h2', mu.titre);
     const ch = $('#presentation .chapeau');
     if (ch && Array.isArray(mu.paragraphes)) ch.innerHTML = mu.paragraphes.map(lignes).join('<br><br>');
-    texte('#presentation .outils', mu.repertoire);
+    // le répertoire « Chant corse · Variété française · … » devient une pilule par genre
+    const rep = $('#presentation .outils');
+    if (rep && mu.repertoire != null)
+      rep.innerHTML = String(mu.repertoire).split(/\s*[·|]\s*/).filter(Boolean).map(g => `<span>${echapper(g)}</span>`).join('');
   }
 
   /* ----- Programme de la semaine (masquable hors saison depuis le back-office) ----- */

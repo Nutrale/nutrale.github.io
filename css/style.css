@@ -377,14 +377,27 @@ img.photo { padding: 0; }
 #live.a-glisse .indice { opacity: 0; }
 /* Présentation côté musique : une carte blanche posée sur le vert */
 #presentation .carte {
-  display: grid; justify-items: center; gap: 18px; max-width: 760px; margin: 0 auto; text-align: center;
+  position: relative; display: grid; justify-items: center; gap: 18px; max-width: 760px; margin: 0 auto; text-align: center;
   padding: clamp(36px, 5vw, 64px) clamp(24px, 5vw, 72px); border-radius: 22px;
   background: var(--blanc); color: var(--vert); box-shadow: 0 24px 60px rgba(10, 30, 15, .25);
 }
+#presentation .carte-titre, #presentation .carte-texte { display: grid; justify-items: center; gap: 18px; }
 #presentation .caps, #presentation .chapeau { margin: 0; }
 #presentation h2 { font-size: clamp(34px, 4vw, 52px); }
 #presentation .chapeau { max-width: 46ch; color: #2F4A35; }
-@media (max-width: 760px) { #presentation h2 { font-size: 30px; } }
+/* Le répertoire : une pilule au trait par genre */
+#presentation .outils { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+#presentation .outils span { padding: 6px 12px; border: 1.5px solid currentColor; border-radius: 99px; font-size: 11px; letter-spacing: .1em; white-space: nowrap; }
+/* Sur ordinateur : deux colonnes, le titre à gauche, le texte et le répertoire à droite */
+@media (min-width: 900px) {
+  #presentation .carte { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: center; gap: 0 56px; max-width: 1000px; text-align: left; justify-items: stretch; }
+  #presentation .carte-titre, #presentation .carte-texte { justify-items: start; }
+  #presentation .carte-titre { padding-right: 48px; border-right: 1.5px solid rgba(68, 106, 76, .25); }
+  #presentation .outils { justify-content: flex-start; }
+}
+@media (max-width: 760px) {
+  #presentation h2 { font-size: 30px; }
+}
 
 /* Sous les photos : Instagram et téléphone en notes manuscrites, avec leur picto dessiné au trait */
 .notes-contact { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px 64px; margin-top: 48px; }
