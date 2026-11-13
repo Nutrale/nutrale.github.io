@@ -611,6 +611,7 @@
 
       function ouvrir(auClavier) {
         clearTimeout(fermeture);
+        cacherBulle();   // la bulle d'erreur ne cache pas le calendrier
         if (boite.hidden) {
           vue = new Date((choisie || auj).getFullYear(), (choisie || auj).getMonth(), 1);
           dessiner();
@@ -627,6 +628,7 @@
       }
       function choisir(d) {
         choisie = d; saisie.value = cache.value = enLettres(d);
+        saisie.dispatchEvent(new Event('change', { bubbles: true }));
         cache.dataset.iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         grille.querySelectorAll('[aria-pressed]').forEach(b => b.removeAttribute('aria-pressed'));
         grille.querySelector(`[data-jour="${d.getDate()}"]`).setAttribute('aria-pressed', 'true');
@@ -713,8 +715,61 @@
       return { sujet, corps };
     }
 
+    /* Champ manquant : comme le navigateur, une petite bulle sous le premier champ à compléter,
+       mais la nôtre (aux couleurs du site, avec nos mots). Elle s'en va dès qu'on remplit. */
+    form.noValidate = true;
+    const emailOk = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+    const CONTROLES = [
+      { cible: () => form.querySelector('[name="type"]'), ancre: () => form.querySelector('.pastilles'), centre: true,
+        message: () => !form.querySelector('[name="type"]:checked') && 'Choisissez d’abord le type de soirée.' },
+      { cible: () => $('#date-choisie'),
+        message: () => !$('#date-choisie').value.trim() && 'Choisissez une date dans le calendrier.' },
+      { cible: () => form.elements.lieu,
+        message: () => !form.elements.lieu.value.trim() && 'Indiquez le lieu : l’établissement ou la ville.' },
+      { cible: () => form.elements.nom,
+        message: () => !form.elements.nom.value.trim() && 'Indiquez votre nom.' },
+      { cible: () => form.elements.email,
+        message: () => { const v = form.elements.email.value.trim();
+          return !v ? 'Indiquez votre e-mail, pour que je puisse vous répondre.' : !emailOk(v) && 'Cette adresse e-mail semble incomplète.'; } }
+    ];
+    const bulle = document.createElement('div');
+    bulle.className = 'bulle'; bulle.id = 'bulle-erreur'; bulle.setAttribute('role', 'alert'); bulle.hidden = true;
+    bulle.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.6 4.3C13 2.3 7.7 2.9 4.9 6.6c-2.5 3.4-2 9 1.7 12 3.6 2.9 9.6 2.6 12.6-1 2.7-3.3 2.5-8.9-.9-11.9"/><path d="M12.1 7.4c-.1 2-.1 4 0 6.1M12 16.8v.3"/></svg><span></span>';
+    form.append(bulle);
+    let minuterie, signale = null;
+    function cacherBulle() {
+      clearTimeout(minuterie);
+      bulle.hidden = true;
+      if (signale) { signale.removeAttribute('aria-invalid'); signale.removeAttribute('aria-describedby'); signale = null; }
+    }
+    function montrerBulle(c, texte) {
+      cacherBulle();
+      const el = c.cible(), ancre = (c.ancre || c.cible)();
+      bulle.querySelector('span').textContent = texte;
+      bulle.classList.toggle('centree', !!c.centre);
+      const f = form.getBoundingClientRect(), a = ancre.getBoundingClientRect();
+      bulle.style.top = (a.bottom - f.top + 14) + 'px';
+      bulle.style.left = (c.centre ? a.left + a.width / 2 : a.left) - f.left + 'px';
+      bulle.hidden = false;
+      bulle.classList.remove('pop'); void bulle.offsetWidth; bulle.classList.add('pop');   // relance l'apparition
+      el.setAttribute('aria-invalid', 'true'); el.setAttribute('aria-describedby', bulle.id); signale = el;
+      ancre.scrollIntoView({ block: 'center', behavior: mouvementReduit.matches ? 'auto' : 'smooth' });
+      el.focus({ preventScroll: true });
+      minuterie = setTimeout(cacherBulle, 6000);
+    }
+    function verifier() {
+      for (const c of CONTROLES) { const texte = c.message(); if (texte) { montrerBulle(c, texte); return false; } }
+      cacherBulle();
+      return true;
+    }
+    form.addEventListener('input', cacherBulle);
+    form.addEventListener('change', cacherBulle);
+    document.addEventListener('pointerdown', e => { if (!bulle.hidden && !bulle.contains(e.target)) cacherBulle(); });
+    addEventListener('resize', () => { if (!bulle.hidden) cacherBulle(); });
+
     form.addEventListener('submit', async e => {
       e.preventDefault();
+      if (!verifier()) return;
       const d = new FormData(form);
       if (d.get('bot-field')) return;   // robot
       bouton.disabled = true; etat.textContent = 'Envoi…';

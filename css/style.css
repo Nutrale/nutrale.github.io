@@ -420,7 +420,22 @@ img.photo { padding: 0; }
 .liens a:hover { text-decoration: underline; text-underline-offset: 6px; }
 
 /* ---------- Formulaire de booking (face scène) ---------- */
-.reservation { width: min(680px, 100%); display: grid; gap: 40px; justify-items: center; margin-top: 18px; color-scheme: dark; }
+.reservation { width: min(680px, 100%); display: grid; gap: 40px; justify-items: center; margin-top: 18px; color-scheme: dark; position: relative; }
+/* La bulle d'erreur maison (posée par js/main.js sous le premier champ à compléter) */
+.bulle {
+  position: absolute; z-index: 45; display: flex; align-items: center; gap: 10px; width: max-content; max-width: min(400px, 100%);
+  padding: 10px 16px 10px 12px; border-radius: 14px; background: var(--encre); color: var(--fond);
+  font-size: 15px; letter-spacing: .04em; line-height: 1.35; text-align: left;
+  box-shadow: 0 14px 34px rgba(10, 30, 15, .35); transform-origin: 26px 0;
+}
+.bulle[hidden] { display: none; }
+.bulle::before { content: ''; position: absolute; top: -6px; left: 20px; width: 13px; height: 13px; background: inherit; border-radius: 3px 0 0 0; transform: rotate(45deg); }
+.bulle svg { flex: none; width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.bulle.centree { translate: -50% 0; transform-origin: 50% 0; }
+.bulle.centree::before { left: calc(50% - 6.5px); }
+.bulle.pop { animation: bulle .32s cubic-bezier(.2, .9, .3, 1.25); }
+@keyframes bulle { from { opacity: 0; transform: translateY(-6px) scale(.92); } }
+@media (prefers-reduced-motion: reduce) { .bulle.pop { animation: none; } }
 .types { border: 0; margin: 0; padding: 0; display: grid; gap: 16px; justify-items: center; }
 .types legend { font-size: 11px; padding: 0; margin: 0 auto 16px; }
 .pastilles { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
@@ -441,7 +456,6 @@ img.photo { padding: 0; }
 }
 .champ textarea { resize: vertical; min-height: 3.2em; line-height: 1.5; }
 .champ input:focus, .champ textarea:focus { outline: none; border-bottom-color: currentColor; }
-.champ input:user-invalid, .champ textarea:user-invalid { border-bottom-style: dashed; border-bottom-color: currentColor; }
 .champ ::placeholder { color: inherit; opacity: .45; }
 /* Champ date : calendrier maison, dans la DA (celui du navigateur ne se personnalise pas) */
 .champ-date { position: relative; }
@@ -492,6 +506,9 @@ img.photo { padding: 0; }
 
 .reservation .bouton { justify-self: center; cursor: pointer; background: none; color: inherit; font: inherit; font-size: 18px; letter-spacing: .05em; }
 .reservation .bouton:disabled { opacity: .5; cursor: wait; }
+/* Au survol (et au clavier) : le bouton se remplit de blanc, le texte passe en vert */
+@media (hover: hover) { .reservation .bouton:not(:disabled):hover { background: var(--encre); color: var(--fond); } }
+.reservation .bouton:focus-visible { outline: none; background: var(--encre); color: var(--fond); }
 .etat { min-height: 1.6em; margin: -24px 0 0; font-size: 16px; color: var(--texte); }
 .merci { display: grid; gap: 14px; justify-items: center; }
 .reservation[hidden], .merci[hidden] { display: none; }
