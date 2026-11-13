@@ -42,10 +42,7 @@ window.CONTENU = {
         "titre": "Delta Bois",
         "categorie": "Stage · catalogues et vidéo",
         "rubriques": [
-          "Print",
-          "Photo",
-          "Vidéo & motion",
-          "Réseaux sociaux"
+          "Print"
         ],
         "une": true,
         "cadrage": "50% 100%",
@@ -56,7 +53,6 @@ window.CONTENU = {
           "Douze pages, pensées par cahiers de quatre pour l'imprimeur. C'est sur ce projet que j'ai appris InDesign. J'ai aussi photographié et retouché le pin maritime de Corse présenté dans le catalogue."
         ],
         "images": [
-          "img/projets/catalogue-parquet/01.jpg",
           "img/projets/catalogue-parquet/02.jpg",
           "img/projets/catalogue-parquet/03.jpg",
           "img/projets/catalogue-parquet/04.jpg"
@@ -77,7 +73,6 @@ window.CONTENU = {
               "En couverture, une cuisine sombre et le mot INTÉRIEUR en très grand, dans la même construction que le catalogue parquet."
             ],
             "images": [
-              "img/projets/catalogue-amenagement-interieur/01.jpg",
               "img/projets/catalogue-amenagement-interieur/02.jpg",
               "img/projets/catalogue-amenagement-interieur/03.jpg"
             ],
@@ -107,7 +102,26 @@ window.CONTENU = {
               }
             ]
           }
-        ]
+        ],
+        "vignette": "img/projets/catalogue-parquet/01.jpg"
+      },
+      {
+        "id": "logo-lm",
+        "titre": "LM, mon monogramme",
+        "categorie": "Logotype · identité personnelle",
+        "rubriques": [
+          "Identité visuelle"
+        ],
+        "texte": [
+          "LM, ce sont mes initiales, et la signature que je pose sur mes créations, mon CV et mes stories. Je voulais un signe simple, symétrique, lisible d'un coup d'œil, même en tout petit au coin d'une affiche.",
+          "Le monogramme n'utilise que des traits droits de même épaisseur : deux L emboîtés, puis un M dont les jambages se terminent en biseau. Tout est vertical, rien ne dépasse : j'ai retiré tout ce qui n'était pas nécessaire.",
+          "Noir sur blanc, il passe aussi en blanc sur une photo ou un fond sombre sans perdre sa lisibilité."
+        ],
+        "images": [
+          "img/projets/logo-lm/01.jpg"
+        ],
+        "fichiers": [],
+        "une": true
       },
       {
         "id": "echappatoire-virtuelle",
@@ -126,9 +140,7 @@ window.CONTENU = {
           "img/projets/echappatoire-virtuelle/01.jpg",
           "img/projets/echappatoire-virtuelle/02.jpg",
           "img/projets/echappatoire-virtuelle/03.jpg",
-          "img/projets/echappatoire-virtuelle/04.jpg",
-          "img/projets/echappatoire-virtuelle/05.jpg",
-          "img/projets/echappatoire-virtuelle/06.jpg"
+          "img/projets/echappatoire-virtuelle/05.jpg"
         ],
         "fichiers": [
           {
@@ -155,7 +167,6 @@ window.CONTENU = {
           "La charte graphique fixe les règles d'usage, le duo Uncial Antiqua et Asap, et deux palettes : des fonds tirés des paysages, des couleurs plus vives pour les personnages."
         ],
         "images": [
-          "img/projets/logo-prosa/02.jpg",
           "img/projets/logo-prosa/01.jpg",
           "img/projets/logo-prosa/03.jpg",
           "img/projets/logo-prosa/04.jpg",
@@ -289,25 +300,6 @@ window.CONTENU = {
         ],
         "une": true,
         "cadrage": "80% 50%"
-      },
-      {
-        "id": "logo-lm",
-        "titre": "LM, mon monogramme",
-        "categorie": "Logotype · identité personnelle",
-        "rubriques": [
-          "Identité visuelle"
-        ],
-        "texte": [
-          "LM, ce sont mes initiales, et la signature que je pose sur mes créations, mon CV et mes stories. Je voulais un signe simple, symétrique, lisible d'un coup d'œil, même en tout petit au coin d'une affiche.",
-          "Le monogramme n'utilise que des traits droits de même épaisseur : deux L emboîtés, puis un M dont les jambages se terminent en biseau. Tout est vertical, rien ne dépasse : j'ai retiré tout ce qui n'était pas nécessaire.",
-          "Noir sur blanc, il passe aussi en blanc sur une photo ou un fond sombre sans perdre sa lisibilité."
-        ],
-        "images": [
-          "img/projets/logo-lm/01.jpg",
-          "img/projets/logo-lm/02.jpg",
-          "img/projets/logo-lm/03.jpg"
-        ],
-        "fichiers": []
       },
       {
         "id": "logo-rose-noire",
@@ -522,7 +514,8 @@ window.CONTENU = {
           "img/projets/logo-media-mare/02.jpg",
           "img/projets/logo-media-mare/01.jpg"
         ],
-        "fichiers": []
+        "fichiers": [],
+        "masque": true
       },
       {
         "id": "logo-pulse",
@@ -538,7 +531,8 @@ window.CONTENU = {
         "images": [
           "img/projets/logo-pulse/01.jpg"
         ],
-        "fichiers": []
+        "fichiers": [],
+        "masque": true
       },
       {
         "id": "green-game",
@@ -574,7 +568,8 @@ window.CONTENU = {
           "img/projets/logo-voce-di-gialla/01.jpg"
         ],
         "fichiers": [],
-        "cadrage": "entier"
+        "cadrage": "entier",
+        "masque": true
       },
       {
         "id": "logo-carnavale-di-brandu",
@@ -588,8 +583,7 @@ window.CONTENU = {
           "Le nom dessine un visage : des cornes coiffent le mot CARNAVALE, DI forme le nez, BRANDU la gueule. Noir et blanc, pour le contraste et la lisibilité. Il m'a fallu une dizaine d'essais pour y arriver."
         ],
         "images": [
-          "img/projets/logo-carnavale-di-brandu/01.jpg",
-          "img/projets/logo-carnavale-di-brandu/02.jpg"
+          "img/projets/logo-carnavale-di-brandu/01.jpg"
         ],
         "fichiers": [],
         "cadrage": "entier"
@@ -607,7 +601,6 @@ window.CONTENU = {
           "Il se termine par des propositions concrètes pour améliorer le site, sa lisibilité et la présence en ligne de la marque."
         ],
         "images": [
-          "img/projets/audit-la-vie-est-belt/01.jpg",
           "img/projets/audit-la-vie-est-belt/02.jpg",
           "img/projets/audit-la-vie-est-belt/03.jpg",
           "img/projets/audit-la-vie-est-belt/04.jpg",
@@ -620,7 +613,8 @@ window.CONTENU = {
             "poids": "PDF · 5,0 Mo"
           }
         ],
-        "cadrage": "50% 35%"
+        "cadrage": "50% 35%",
+        "vignette": "img/projets/audit-la-vie-est-belt/01.jpg"
       }
     ]
   },

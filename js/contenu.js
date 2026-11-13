@@ -65,7 +65,7 @@
     texte('#projets h2', C.projets.titre);
     window.RUBRIQUES = C.projets.rubriques || [];
     const fichiersProjet = l => (l || []).filter(f => f && f.url).map(f => ({ titre: f.titre || 'Télécharger', url: f.url, poids: f.poids || '' }));
-    window.PROJETS = (C.projets.liste || []).map(p => ({
+    window.PROJETS = (C.projets.liste || []).filter(p => !p.masque).map(p => ({   // masqué : gardé dans le back-office, absent du site
       id: p.id, titre: p.titre, rubriques: p.rubriques || [], une: !!p.une,   // une : dans la sélection affichée d'abord
       cadrage: p.cadrage || '',   // point de la vignette à garder visible (ex. « 50% 100% » = le bas de l'image)
       categorie: (p.categorie || '').trim() || (p.rubriques || []).join(' · '),   // vide : on affiche les filtres cochés

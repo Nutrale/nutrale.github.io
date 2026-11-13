@@ -890,12 +890,100 @@
         <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3.2c.1 3.9-.1 7.9 0 11.6M5.6 10.6c1.5 1.5 2.9 3 4.4 4.4 1.5-1.4 2.9-2.9 4.4-4.4M4 17.4c4 .2 8 0 12 .1"/></svg>
         <span>${echapper(f.titre)}</span>${f.poids ? `<small>${echapper(f.poids)}</small>` : ''}
       </a>`).join('');
-  function remplirImages(conteneur, images, titre, premier) {
-    conteneur.innerHTML = images.map((src, i) => `<img src="${echapper(src)}" alt="${echapper(titre)}, visuel ${i + 1}" loading="${premier && !i ? 'eager' : 'lazy'}">`).join('');
+  /* Les visuels d'une partie : d'abord les vidéos (lecteur intégré) et les PDF (lecteur page par page),
+     puis les images. Les pilules « Télécharger » restent sous le texte. */
+  const estVideo = f => /\.mp4$/i.test(f.url), estPdf = f => /\.pdf$/i.test(f.url);
+  function remplirVisuels(conteneur, images, fichiers, titre, premier) {
+    // La 1re image sert d'aperçu à la vidéo (et n'est donc pas répétée dessous) ; si la vidéo est verticale,
+    // l'aperçu (souvent horizontal) est retiré et l'image revient avec les autres.
+    const apercu = fichiers.some(estVideo) && images.length ? images[0] : '';
+    const videos = fichiers.filter(estVideo).map((f, i) => `
+      <figure class="lecteur-video">
+        <video src="${echapper(f.url)}${apercu && !i ? '' : '#t=0.1'}" controls preload="metadata" playsinline${apercu && !i ? ` poster="${echapper(apercu)}"` : ''}></video>
+      </figure>`);
+    const imagesAffichees = apercu ? images.slice(1) : images;
+    const pdfs = fichiers.filter(estPdf).map(f => `
+      <figure class="lecteur-pdf" data-url="${echapper(f.url)}">
+        <div class="lecteur-page"><canvas aria-label="${echapper(titre)}, PDF"></canvas><p class="lecteur-attente caps">Chargement du PDF…</p></div>
+        <figcaption>
+          <button class="lecteur-prec" type="button" aria-label="Page précédente" disabled>‹</button>
+          <span class="lecteur-etat caps">PDF</span>
+          <button class="lecteur-suiv" type="button" aria-label="Page suivante" disabled>›</button>
+          <a class="lecteur-grand caps" href="${echapper(f.url)}" target="_blank" rel="noopener">Ouvrir en grand ↗</a>
+        </figcaption>
+      </figure>`);
+    conteneur.innerHTML = videos.join('') + pdfs.join('') +
+      imagesAffichees.map((src, i) => `<img src="${echapper(src)}" alt="${echapper(titre)}, visuel ${i + 1}" loading="${premier && !i ? 'eager' : 'lazy'}">`).join('');
     conteneur.querySelectorAll('img').forEach(img => {   // les visuels très en hauteur (stories) se rangent par trois
       const ranger = () => img.classList.toggle('etroite', img.naturalHeight / img.naturalWidth > 1.55);
       if (img.complete && img.naturalWidth) ranger(); else img.addEventListener('load', ranger, { once: true });
     });
+    conteneur.querySelectorAll('.lecteur-pdf').forEach(lecteurPdf);
+    conteneur.querySelectorAll('video').forEach(v => {   // la vidéo garde son format (une vidéo verticale reste verticale)
+      const caler = () => {
+        const verticale = v.videoHeight > v.videoWidth;
+        v.classList.toggle('verticale', verticale);
+        if (verticale && v.hasAttribute('poster')) {
+          v.removeAttribute('poster');
+          v.currentTime = 0.1;   // sans aperçu, on montre la première image de la vidéo
+          const img = document.createElement('img');
+          img.src = apercu; img.alt = `${titre}, visuel`; img.loading = 'lazy';
+          const premiere = conteneur.querySelector(':scope > img');
+          premiere ? premiere.before(img) : conteneur.append(img);
+        }
+      };
+      if (v.readyState >= 1) caler(); else v.addEventListener('loadedmetadata', caler, { once: true });
+    });
+  }
+
+  // Lecteur PDF : PDF.js (chargé seulement à l'ouverture d'une fiche qui a un PDF), une page à la fois
+  const PDFJS = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
+  let pdfjsPret = null;
+  const chargerPdfjs = () => pdfjsPret || (pdfjsPret = new Promise((ok, ko) => {
+    const s = document.createElement('script');
+    s.src = PDFJS + 'pdf.min.js';
+    s.onload = () => { window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS + 'pdf.worker.min.js'; ok(window.pdfjsLib); };
+    s.onerror = () => { pdfjsPret = null; ko(new Error('PDF.js indisponible')); };
+    document.head.append(s);
+  }));
+  function lecteurPdf(el) {
+    const toile = el.querySelector('canvas'), etat = el.querySelector('.lecteur-etat'), attente = el.querySelector('.lecteur-attente');
+    const prec = el.querySelector('.lecteur-prec'), suiv = el.querySelector('.lecteur-suiv');
+    let doc = null, page = 1, rendu = null;
+    async function afficher(n) {
+      if (!doc) return;
+      page = Math.min(Math.max(1, n), doc.numPages);
+      prec.disabled = page === 1; suiv.disabled = page === doc.numPages;
+      etat.textContent = `Page ${page} / ${doc.numPages}`;
+      const pg = await doc.getPage(page);
+      const largeur = el.querySelector('.lecteur-page').clientWidth || 600;
+      const v = pg.getViewport({ scale: largeur / pg.getViewport({ scale: 1 }).width * Math.min(devicePixelRatio || 1, 2) });
+      if (rendu) rendu.cancel();
+      const hors = document.createElement('canvas');   // dessin hors écran, puis copie : pas de page blanche entre deux pages
+      hors.width = v.width; hors.height = v.height;
+      rendu = pg.render({ canvasContext: hors.getContext('2d'), viewport: v });
+      try { await rendu.promise; } catch (e) { return; }
+      toile.width = hors.width; toile.height = hors.height;
+      toile.getContext('2d').drawImage(hors, 0, 0);
+      attente.hidden = true;
+    }
+    prec.addEventListener('click', () => afficher(page - 1));
+    suiv.addEventListener('click', () => afficher(page + 1));
+    let x0 = null;   // sur téléphone : glisser le doigt pour tourner les pages
+    toile.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
+    toile.addEventListener('touchend', e => { if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 50) afficher(page + (dx < 0 ? 1 : -1)); });
+    const obs = new IntersectionObserver(async entrees => {   // le PDF ne se charge que quand le lecteur approche de l'écran
+      if (!entrees.some(e => e.isIntersecting)) return;
+      obs.disconnect();
+      try {
+        const lib = await chargerPdfjs();
+        doc = await lib.getDocument(el.dataset.url).promise;
+        afficher(1);
+      } catch (e) {
+        attente.textContent = 'Le PDF ne s\'affiche pas ici : ouvre-le en grand ou télécharge-le.';
+      }
+    }, { root: fiche, rootMargin: '300px' });
+    obs.observe(el);
   }
   const suiteFiche = $('#fiche-suite'), nav = fiche.querySelector('.fiche-nav'), infosPremiere = fiche.querySelector('.fiche-corps .fiche-infos');
 
@@ -915,7 +1003,7 @@
     const fichiers = $('#fiche-fichiers'), aTelecharger = p.fichiers || [];   // PDF et vidéos : un lien de téléchargement chacun
     fichiers.innerHTML = htmlFichiers(aTelecharger);
     fichiers.hidden = !aTelecharger.length;
-    remplirImages($('#fiche-images'), p.images, p.titre, true);
+    remplirVisuels($('#fiche-images'), p.images, aTelecharger, p.titre, true);
     suiteFiche.replaceChildren(...parties.map(s => {
       const bloc = document.createElement('div');
       bloc.className = 'fiche-corps fiche-bloc';
@@ -926,7 +1014,7 @@
           ${s.fichiers.length ? `<div class="fiche-fichiers">${htmlFichiers(s.fichiers)}</div>` : ''}
         </div>
         <div class="fiche-images"></div>`;
-      remplirImages(bloc.querySelector('.fiche-images'), s.images, `${p.titre}, ${s.titre}`, false);
+      remplirVisuels(bloc.querySelector('.fiche-images'), s.images, s.fichiers, `${p.titre}, ${s.titre}`, false);
       return bloc;
     }));
     (parties.length ? suiteFiche.lastElementChild.querySelector('.fiche-infos') : infosPremiere).append(nav);   // « Précédent / Suivant » tout en bas
@@ -940,7 +1028,10 @@
     const suite = projetsVisibles(), n = suite.indexOf(projetOuvert);
     ouvrir(suite[(n + k + suite.length) % suite.length]);
   }
-  fiche.addEventListener('close', () => history.replaceState(null, '', location.pathname + location.search + '#projets'));
+  fiche.addEventListener('close', () => {
+    fiche.querySelectorAll('video').forEach(v => v.pause());   // la vidéo s'arrête quand on ferme la fiche
+    history.replaceState(null, '', location.pathname + location.search + '#projets');
+  });
   fiche.querySelector('[data-fermer]').addEventListener('click', () => fiche.close());
   fiche.querySelector('.fiche-prec').addEventListener('click', () => voisin(-1));
   fiche.querySelector('.fiche-suiv').addEventListener('click', () => voisin(1));

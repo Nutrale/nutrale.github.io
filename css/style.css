@@ -566,6 +566,24 @@ html:has(.fiche[open]) { overflow: hidden; }   /* la page derrière ne bouge plu
   border-radius: 10px;
 }
 .fiche-images img.etroite { grid-column: span 1; width: 100%; max-height: none; }
+/* Lecteurs intégrés : vidéo et PDF (page par page), en tête des visuels de la partie */
+.lecteur-video, .lecteur-pdf { grid-column: 1 / -1; margin: 0; }
+.lecteur-video video { display: block; width: 100%; height: auto; max-height: 82vh; margin: 0 auto; border-radius: 10px; background: #000; object-fit: contain; }
+.lecteur-video video.verticale { width: auto; max-width: 100%; height: min(82vh, 760px); }   /* format TikTok / Reels */
+.lecteur-page { position: relative; border: 1px solid var(--filet); border-radius: 10px; overflow: hidden; background: #fff; min-height: 220px; }
+.lecteur-page canvas { display: block; width: 100%; height: auto; }
+.lecteur-attente { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; padding: 20px; text-align: center; font-size: 11px; color: var(--texte); }
+.lecteur-attente[hidden] { display: none; }
+.lecteur-pdf figcaption { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 12px; flex-wrap: wrap; }
+.lecteur-pdf figcaption button {
+  width: 40px; height: 40px; border: 1.5px solid currentColor; border-radius: 50%; background: none; color: inherit;
+  font: inherit; font-size: 22px; line-height: 1; cursor: pointer; transition: background .25s, color .25s;
+}
+.lecteur-pdf figcaption button:disabled { opacity: .3; cursor: default; }
+@media (hover: hover) { .lecteur-pdf figcaption button:not(:disabled):hover { background: var(--encre); color: var(--fond); } }
+.lecteur-pdf figcaption button:focus-visible { outline: none; background: var(--encre); color: var(--fond); }
+.lecteur-etat { min-width: 110px; text-align: center; font-size: 11px; }
+.lecteur-grand { font-size: 11px; color: inherit; text-underline-offset: 4px; }
 
 /* ---------- Bascule animée (cercle depuis l'interrupteur) ---------- */
 ::view-transition-old(root),
