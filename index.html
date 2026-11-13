@@ -12,10 +12,13 @@
   <!-- POLICE : FF Providence Sans, envoyée aux visiteurs par le projet Web Adobe Fonts « Portfolio » (Regular et Bold) -->
   <link rel="preconnect" href="https://use.typekit.net" crossorigin>
   <link rel="stylesheet" href="https://use.typekit.net/mpu6bdi.css">
-  <link rel="stylesheet" href="css/style.css?v=101">
+  <link rel="stylesheet" href="css/style.css?v=118">
   <script>
     // Ouvre directement la face scène avec un lien du type …/index.html?mode=scene
     if (new URLSearchParams(location.search).get('mode') === 'scene') document.documentElement.dataset.mode = 'scene';
+    // Le contenu (contenu/site.js) est posé avant l'affichage : rien ne « saute » quand il arrive (sécurité : 3 s max)
+    document.documentElement.classList.add('chargement');
+    setTimeout(() => document.documentElement.classList.remove('chargement'), 3000);
   </script>
 </head>
 <body>
@@ -100,8 +103,7 @@
 
     <section class="face-com bloc" id="projets">
       <div class="entete"><p class="caps">Projets</p><h2>Sélection de projets</h2></div>
-      <ol class="programme-projets" id="liste-projets"><!-- rempli automatiquement depuis js/projets.js --></ol>
-      <img class="apercu" id="apercu" alt="" aria-hidden="true">
+      <ol class="programme-projets" id="liste-projets"><!-- rempli automatiquement depuis contenu/site.js --></ol>
     </section>
 
     <section class="face-com bloc" id="parcours">
@@ -129,6 +131,16 @@
     <!-- =========================================================
          FACE SCÈNE (interrupteur allumé)
          ========================================================= -->
+
+    <!-- Présentation côté musique : une carte blanche posée sur le vert (textes modifiables dans le back-office, onglet Textes) -->
+    <section class="face-scene bloc" id="presentation">
+      <div class="carte">
+        <p class="caps">Le répertoire</p>
+        <h2>Depuis cinq étés</h2>
+        <p class="chapeau">Depuis cinq ans, chaque été, je chante en guitare-voix dans les bars, les restaurants et les mariages de Corse du Sud. Au programme&nbsp;: du chant corse, de la variété française et des classiques internationaux.</p>
+        <p class="caps outils">Chant corse · Variété française · Internationale</p>
+      </div>
+    </section>
 
     <section class="face-scene bloc" id="live">
       <div class="entete"><p class="caps">En live</p><h2>Sur scène</h2></div>
@@ -272,7 +284,9 @@
       <div class="fiche-infos">
         <p class="caps fiche-categorie" id="fiche-categorie"></p>
         <h2 id="fiche-titre" tabindex="-1" autofocus></h2>
+        <h3 class="fiche-partie" id="fiche-partie" hidden></h3>
         <div class="fiche-texte" id="fiche-texte"></div>
+        <div class="fiche-fichiers" id="fiche-fichiers" hidden></div>
         <nav class="fiche-nav" aria-label="Autres projets">
           <button class="fiche-prec" type="button">← Précédent</button>
           <button class="fiche-suiv" type="button">Suivant →</button>
@@ -280,9 +294,13 @@
       </div>
       <div class="fiche-images" id="fiche-images"></div>
     </div>
+    <div id="fiche-suite"><!-- les autres parties du projet, s'il y en a --></div>
   </dialog>
 
-  <script src="js/projets.js?v=101"></script>
-  <script src="js/main.js?v=101"></script>
+  <!-- Le contenu du site (textes, projets, dates, photos) : modifié par le back-office (admin.html).
+       Toujours chargé à neuf, pour que les modifications se voient tout de suite. -->
+  <script>document.write('<script src="contenu/site.js?t=' + Date.now() + '"><\/script>');</script>
+  <script src="js/contenu.js?v=112"></script>
+  <script src="js/main.js?v=113"></script>
 </body>
 </html>

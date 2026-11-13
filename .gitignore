@@ -3,3 +3,11 @@ LISEZ-MOI.md
 .DS_Store
 .claude/
 publier.command
+admin.html
+css/admin.css
+js/admin.js
+serveur.py
+lancer-le-site.command
+.backoffice-code
+.sauvegardes/
+.demandes/

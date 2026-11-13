@@ -3,3 +3,4 @@
 User-agent: *
 Disallow: /cv-lucas-marrec.pdf
 Disallow: /img/
+Disallow: /fichiers/

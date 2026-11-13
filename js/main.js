@@ -7,6 +7,7 @@
   const interrupteurs = document.querySelectorAll('.interrupteur');
   const mouvementReduit = window.matchMedia('(prefers-reduced-motion: reduce)');
   const $ = s => document.querySelector(s);
+  const echapper = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');   // textes venus du back-office
 
   /* =========================================================
      SON : cordes synthétisées (algorithme de Karplus-Strong)
@@ -575,7 +576,7 @@
      ========================================================= */
   (() => {
     const form = $('#reservation'), merci = $('#merci'), etat = form.querySelector('.etat'), bouton = form.querySelector('[type="submit"]');
-    const ADRESSE = 'lucmarrec2a@gmail.com';
+    const ADRESSE = (window.CONTENU && window.CONTENU.coordonnees && window.CONTENU.coordonnees.email) || 'lucmarrec2a@gmail.com';
     /* Calendrier maison : la date choisie est entourée d'un rond tracé à la main.
        Pas de date dans le passé ; souris, doigt et clavier (flèches, Page ↑/↓, Échap). */
     (() => {
@@ -719,6 +720,14 @@
       bouton.disabled = true; etat.textContent = 'Envoi…';
       try {
         if (location.protocol === 'file:') throw new Error('hors ligne');
+        // 1. Le serveur du site (serveur.py) range la demande dans le back-office, page « Demandes »
+        try {
+          const r = await fetch('api/demande', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...Object.fromEntries([...d].filter(([, v]) => typeof v === 'string')), dateIso: form.elements.date.dataset.iso || '' }) });
+          if (r.ok) { form.hidden = true; merci.hidden = false; merci.focus(); return; }
+          if (r.status === 429 || r.status === 400) throw Object.assign(new Error('refus'), { definitif: true });
+        } catch (x) { if (x.definitif) throw x; }
+        // 2. Sinon (site hébergé ailleurs) : Netlify Forms
         const envoi = new FormData(form);   // en multipart : Netlify garde le fichier et met son lien dans l'e-mail
         const ics = invitation(d);
         if (ics) envoi.set('invitation', ics, ics.name); else envoi.delete('invitation');
@@ -741,63 +750,84 @@
   })();
 
   /* =========================================================
-     PROJETS : liste « programme », image qui suit la souris, fiche
+     PROJETS : index (ordinateur), grille de vignettes (téléphone), fiche
      ========================================================= */
   const liste = $('#liste-projets');
-  const apercu = $('#apercu');
   const fiche = $('#fiche');
   const projets = window.PROJETS || [];
+
+  /* Sur ordinateur, l'index : la liste à gauche, une grande image à droite qui montre le projet survolé.
+     Sur téléphone, la grille de vignettes (le panneau est masqué). */
+  const corps = document.createElement('div');   // enveloppe : liste à gauche, grande image à droite
+  corps.className = 'projets-corps';
+  liste.before(corps);
+  corps.append(liste);
+  const panneau = document.createElement('figure');
+  panneau.className = 'index-image';
+  panneau.setAttribute('aria-hidden', 'true');
+  panneau.innerHTML = '<img alt="" loading="lazy"><figcaption class="caps"></figcaption>';
+  corps.append(panneau);
+  let projetIndex = null;
+  function montrerIndex(p) {   // la grande image suit le projet survolé
+    if (!p || p === projetIndex) return;
+    projetIndex = p;
+    const img = panneau.querySelector('img');
+    img.classList.toggle('entiere', p.cadrage === 'entier');
+    img.src = p.vignette;
+    panneau.querySelector('figcaption').textContent = p.categorie;
+    [...liste.children].forEach(li => li.classList.toggle('actif', li.projet === p));
+  }
 
   projets.forEach((p, i) => {
     const li = document.createElement('li');
     li.innerHTML = `
       <button class="ligne" type="button">
         <span class="num"><small>N°</small><b>${String(i + 1).padStart(2, '0')}</b></span>
-        <span class="titre-projet">${p.titre}</span>
-        <span class="cat caps">${p.categorie}</span>
-        <img class="mini" src="${p.images[0]}" alt="" loading="lazy">
+        <span class="titre-projet">${echapper(p.titre)}</span>
+        <span class="cat caps">${echapper(p.categorie)}</span>
+        <img class="mini${p.cadrage === 'entier' ? ' entiere' : ''}" src="${echapper(p.vignette)}" alt="" loading="lazy"${p.cadrage && p.cadrage !== 'entier' ? ` style="object-position: ${echapper(p.cadrage)}"` : ''}>
       </button>`;
     const ligne = li.querySelector('.ligne');
     ligne.addEventListener('click', () => ouvrir(p));
-    ligne.addEventListener('pointerenter', () => { apercu.src = p.images[0]; apercu.classList.add('visible'); });
+    ligne.addEventListener('pointerenter', () => montrerIndex(p));
+    ligne.addEventListener('focus', () => montrerIndex(p));
     li.projet = p;
     liste.appendChild(li);
   });
 
-  /* Filtres par rubrique : un mot par rubrique utilisée (ordre de RUBRIQUES dans js/projets.js),
-     souligné d'un trait à la main quand il est choisi. La liste se resserre en glissant. */
-  (function filtres() {
+  /* Sélection et filtres.
+     — Sélection : seuls les projets cochés « À la une » (back-office) s'affichent d'abord ; la pilule
+       « Voir les N projets » sous la liste déroule les autres, « Revenir à la sélection » les replie.
+       Si aucun projet n'est à la une (ou s'ils le sont tous), tout s'affiche et la pilule disparaît.
+     — Filtres : un mot par rubrique utilisée (ordre de RUBRIQUES), souligné d'un trait à la main quand il
+       est choisi ; une rubrique montre tous ses projets, sélection ou non. La liste se resserre en glissant. */
+  (function selectionEtFiltres() {
     const lignes = [...liste.children];
-    const dans = r => lignes.filter(li => (li.projet.rubriques || []).includes(r)).length;
-    const rubriques = (window.RUBRIQUES || []).filter(r => dans(r) > 0);
-    if (!rubriques.length) return;
+    if (!lignes.length) return;
+    const aLaUne = lignes.filter(li => li.projet.une);
+    const selection = aLaUne.length > 0 && aLaUne.length < lignes.length;
+    let rubrique = 'tout', toutVoir = !selection, delai;
 
-    const barre = document.createElement('div');
-    barre.className = 'filtres';
-    barre.setAttribute('role', 'group');
-    barre.setAttribute('aria-label', 'Filtrer les projets');
-    const trait = '<svg class="souligne" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><path d="M2 6.5 C 18 3.5, 34 8, 52 5.5 S 84 3.5, 98 6"/></svg>';
-    barre.innerHTML = [['tout', 'Tout', lignes.length], ...rubriques.map(r => [r, r, dans(r)])]
-      .map(([cle, nom, n]) => `<button type="button" class="filtre" data-rubrique="${cle}" aria-pressed="${cle === 'tout'}"><span data-texte="${nom}">${nom}</span><sup>${n}</sup>${trait}</button>`)
-      .join('');
-    liste.before(barre);
+    const voirTout = document.createElement('div');
+    voirTout.className = 'voir-tout';
+    voirTout.innerHTML = '<button class="bouton" type="button" aria-controls="liste-projets"></button>';
+    const boutonTout = voirTout.firstElementChild;
+    liste.after(voirTout);
 
-    let delai;
-    barre.addEventListener('click', e => {
-      const bouton = e.target.closest('.filtre');
-      if (!bouton || bouton.getAttribute('aria-pressed') === 'true') return;
-      barre.querySelectorAll('.filtre').forEach(b => b.setAttribute('aria-pressed', b === bouton));
-      if (barre.scrollWidth > barre.clientWidth)   // sur téléphone, la rangée glisse pour garder le mot choisi en vue
-        barre.scrollTo({ left: bouton.offsetLeft - (barre.clientWidth - bouton.offsetWidth) / 2, behavior: mouvementReduit.matches ? 'auto' : 'smooth' });
-      const r = bouton.dataset.rubrique;
-
+    function montrer(animer) {
       const avant = new Map(lignes.filter(li => !li.hidden).map(li => { const r = li.getBoundingClientRect(); return [li, [r.left, r.top]]; }));
       let n = 0;
       lignes.forEach(li => {
-        li.hidden = r !== 'tout' && !(li.projet.rubriques || []).includes(r);
+        const p = li.projet;
+        li.hidden = rubrique !== 'tout' ? !(p.rubriques || []).includes(rubrique) : !toutVoir && !p.une;
         if (!li.hidden) li.querySelector('.num b').textContent = String(++n).padStart(2, '0');
       });
-      if (!mouvementReduit.matches) {
+      const premier = lignes.find(li => !li.hidden);   // la grande image montre toujours un projet visible
+      if (premier && (!projetIndex || lignes.find(li => li.projet === projetIndex).hidden)) { projetIndex = null; montrerIndex(premier.projet); }
+      voirTout.hidden = !selection || rubrique !== 'tout';
+      boutonTout.textContent = toutVoir ? 'Revenir à la sélection' : `Voir les ${lignes.length} projets`;
+      boutonTout.setAttribute('aria-expanded', toutVoir);
+      if (animer && !mouvementReduit.matches) {
         let k = 0;
         lignes.forEach(li => {
           if (li.hidden) return;
@@ -805,31 +835,46 @@
           if (avant.has(li)) {   // en liste, les projets glissent vers le haut ; en grille (téléphone), aussi de côté
             const dx = avant.get(li)[0] - r.left, dy = avant.get(li)[1] - r.top;
             if (dx || dy) li.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'none' }], { duration: 480, easing: 'cubic-bezier(.2, .7, .2, 1)' });
-          } else {
+          } else if (r.top < innerHeight) {   // seuls les nouveaux projets visibles à l'écran apparaissent en cascade
             li.animate([{ opacity: 0, transform: 'translateY(16px)' }, { opacity: 1, transform: 'none' }],
-              { duration: 420, delay: 90 + 70 * k++, easing: 'cubic-bezier(.2, .7, .2, 1)', fill: 'backwards' });
+              { duration: 420, delay: 90 + 70 * Math.min(k++, 8), easing: 'cubic-bezier(.2, .7, .2, 1)', fill: 'backwards' });
           }
         });
       }
       clearTimeout(delai);   // la page a changé de hauteur : le sentier se redessine
-      delai = setTimeout(() => Sentier.construire(), 600);
+      delai = setTimeout(() => Sentier.construire(), animer ? 600 : 0);
+    }
+    montrer(false);
+
+    boutonTout.addEventListener('click', () => {
+      toutVoir = !toutVoir;
+      montrer(true);
+      if (!toutVoir) $('#projets').scrollIntoView({ behavior: mouvementReduit.matches ? 'auto' : 'smooth', block: 'start' });
+    });
+
+    const dans = r => lignes.filter(li => (li.projet.rubriques || []).includes(r)).length;
+    const rubriques = (window.RUBRIQUES || []).filter(r => dans(r) > 0);
+    if (!rubriques.length) return;
+    const barre = document.createElement('div');
+    barre.className = 'filtres';
+    barre.setAttribute('role', 'group');
+    barre.setAttribute('aria-label', 'Filtrer les projets');
+    const trait = '<svg class="souligne" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><path d="M2 6.5 C 18 3.5, 34 8, 52 5.5 S 84 3.5, 98 6"/></svg>';
+    barre.innerHTML = [['tout', 'Tout', lignes.length], ...rubriques.map(r => [r, r, dans(r)])]
+      .map(([cle, nom, n]) => `<button type="button" class="filtre" data-rubrique="${echapper(cle)}" aria-pressed="${cle === 'tout'}"><span data-texte="${echapper(nom)}">${echapper(nom)}</span><sup>${n}</sup>${trait}</button>`)
+      .join('');
+    liste.before(barre);
+
+    barre.addEventListener('click', e => {
+      const bouton = e.target.closest('.filtre');
+      if (!bouton || bouton.getAttribute('aria-pressed') === 'true') return;
+      barre.querySelectorAll('.filtre').forEach(b => b.setAttribute('aria-pressed', b === bouton));
+      if (barre.scrollWidth > barre.clientWidth)   // sur téléphone, la rangée glisse pour garder le mot choisi en vue
+        barre.scrollTo({ left: bouton.offsetLeft - (barre.clientWidth - bouton.offsetWidth) / 2, behavior: mouvementReduit.matches ? 'auto' : 'smooth' });
+      rubrique = bouton.dataset.rubrique;
+      montrer(true);
     });
   })();
-
-  // L'aperçu suit la souris avec un léger retard
-  let cx = 0, cy = 0, ax = 0, ay = 0, suit = null;
-  function suivreSouris() {
-    ax += (cx - ax) * .18; ay += (cy - ay) * .18;
-    apercu.style.transform = `translate(${ax}px, ${ay}px)`;
-    suit = Math.abs(cx - ax) + Math.abs(cy - ay) > .5 ? requestAnimationFrame(suivreSouris) : null;
-  }
-  liste.addEventListener('pointermove', ev => {
-    cx = ev.clientX + 28; cy = ev.clientY - apercu.offsetHeight / 2;
-    if (cx + apercu.offsetWidth > innerWidth - 12) cx = ev.clientX - apercu.offsetWidth - 28;
-    if (!apercu.classList.contains('visible')) { ax = cx; ay = cy; }
-    if (!suit) suit = requestAnimationFrame(suivreSouris);
-  });
-  liste.addEventListener('pointerleave', () => apercu.classList.remove('visible'));
 
   /* Fiche projet en plein écran : le texte à gauche (il reste en place), les visuels à droite ;
      sur téléphone, tout l'un sous l'autre. « Précédent / Suivant » (et les flèches du clavier)
@@ -839,22 +884,54 @@
     const vus = [...liste.children].filter(li => !li.hidden).map(li => li.projet);
     return vus.includes(projetOuvert) ? vus : projets;
   };
+  // Un bloc de fiche : le texte, les fichiers à télécharger (PDF, vidéo) et les visuels
+  const htmlFichiers = liste => liste.map(f => `
+      <a href="${echapper(f.url)}" download>
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3.2c.1 3.9-.1 7.9 0 11.6M5.6 10.6c1.5 1.5 2.9 3 4.4 4.4 1.5-1.4 2.9-2.9 4.4-4.4M4 17.4c4 .2 8 0 12 .1"/></svg>
+        <span>${echapper(f.titre)}</span>${f.poids ? `<small>${echapper(f.poids)}</small>` : ''}
+      </a>`).join('');
+  function remplirImages(conteneur, images, titre, premier) {
+    conteneur.innerHTML = images.map((src, i) => `<img src="${echapper(src)}" alt="${echapper(titre)}, visuel ${i + 1}" loading="${premier && !i ? 'eager' : 'lazy'}">`).join('');
+    conteneur.querySelectorAll('img').forEach(img => {   // les visuels très en hauteur (stories) se rangent par trois
+      const ranger = () => img.classList.toggle('etroite', img.naturalHeight / img.naturalWidth > 1.55);
+      if (img.complete && img.naturalWidth) ranger(); else img.addEventListener('load', ranger, { once: true });
+    });
+  }
+  const suiteFiche = $('#fiche-suite'), nav = fiche.querySelector('.fiche-nav'), infosPremiere = fiche.querySelector('.fiche-corps .fiche-infos');
+
   function ouvrir(p) {
-    apercu.classList.remove('visible');
     projetOuvert = p;
     const suite = projetsVisibles(), n = suite.indexOf(p);
     $('#fiche-compteur').textContent = `Projet ${String(n + 1).padStart(2, '0')} / ${String(suite.length).padStart(2, '0')}`;
     $('#fiche-categorie').textContent = p.categorie;
     $('#fiche-titre').textContent = p.titre;
+    // Un projet peut avoir plusieurs parties (ex. le logo, puis l'affiche) : la 1re dans le premier bloc,
+    // les suivantes dans des blocs identiques, l'un sous l'autre, chacun avec son sous-titre.
+    const parties = p.sections || [];
+    const partie = $('#fiche-partie');
+    partie.textContent = p.partie || '';
+    partie.hidden = !(p.partie && parties.length);
     $('#fiche-texte').innerHTML = p.texte.map(t => `<p>${t}</p>`).join('');
-    const images = $('#fiche-images');
-    images.innerHTML = p.images.map((src, i) => `<img src="${src}" alt="${p.titre}, visuel ${i + 1}" loading="${i ? 'lazy' : 'eager'}">`).join('');
-    images.querySelectorAll('img').forEach(img => {   // les visuels très en hauteur (stories) se rangent par trois
-      const ranger = () => img.classList.toggle('etroite', img.naturalHeight / img.naturalWidth > 1.55);
-      if (img.complete && img.naturalWidth) ranger(); else img.addEventListener('load', ranger, { once: true });
-    });
+    const fichiers = $('#fiche-fichiers'), aTelecharger = p.fichiers || [];   // PDF et vidéos : un lien de téléchargement chacun
+    fichiers.innerHTML = htmlFichiers(aTelecharger);
+    fichiers.hidden = !aTelecharger.length;
+    remplirImages($('#fiche-images'), p.images, p.titre, true);
+    suiteFiche.replaceChildren(...parties.map(s => {
+      const bloc = document.createElement('div');
+      bloc.className = 'fiche-corps fiche-bloc';
+      bloc.innerHTML = `
+        <div class="fiche-infos">
+          ${s.titre ? `<h3 class="fiche-partie">${echapper(s.titre)}</h3>` : ''}
+          <div class="fiche-texte">${s.texte.map(t => `<p>${t}</p>`).join('')}</div>
+          ${s.fichiers.length ? `<div class="fiche-fichiers">${htmlFichiers(s.fichiers)}</div>` : ''}
+        </div>
+        <div class="fiche-images"></div>`;
+      remplirImages(bloc.querySelector('.fiche-images'), s.images, `${p.titre}, ${s.titre}`, false);
+      return bloc;
+    }));
+    (parties.length ? suiteFiche.lastElementChild.querySelector('.fiche-infos') : infosPremiere).append(nav);   // « Précédent / Suivant » tout en bas
     const plusieurs = suite.length > 1;
-    fiche.querySelector('.fiche-nav').hidden = !plusieurs;
+    nav.hidden = !plusieurs;
     if (!fiche.open) fiche.showModal();
     fiche.scrollTop = 0;
     history.replaceState(null, '', location.pathname + location.search + '#' + p.id);
@@ -900,6 +977,45 @@
       barre.classList.toggle('visible', presents.size === 0);
     }, { rootMargin: '0px 0px -15% 0px' });
     ['#accueil', '#booking', '.pied'].forEach(sel => guet.observe($(sel)));
+  })();
+
+  /* =========================================================
+     ACCÈS CACHÉ AU BACK-OFFICE (sur le Mac et en Wi-Fi seulement) : 5 clics rapides sur « Lucas Marrec · 2026 »
+     ========================================================= */
+  (() => {
+    const credit = $('.pied > .caps');
+    if (!credit || /github\.io$/.test(location.hostname)) return;   // le back-office n'existe que sur le Mac
+    let clics = 0, remise;
+    credit.addEventListener('click', e => {
+      if (e.target.closest('a')) return;   // le lien Instagram garde son rôle
+      clics++; clearTimeout(remise);
+      remise = setTimeout(() => { clics = 0; }, 1500);
+      if (clics >= 5) { clics = 0; location.href = 'admin.html'; }
+    });
+  })();
+
+  /* =========================================================
+     EN DIRECT (sur le Mac seulement) : quand le back-office sauvegarde, le site ouvert se met à jour tout seul.
+     Toutes les 2 secondes, on regarde si contenu/site.js a changé ; si oui, la page se recharge au même endroit.
+     ========================================================= */
+  (() => {
+    if (!location.protocol.startsWith('http') || /github\.io$/.test(location.hostname)) return;
+    let reference = null;
+    const verifier = async () => {
+      if (document.hidden || (fiche && fiche.open)) return;
+      try {
+        const r = await fetch('contenu/site.js?verif=' + Date.now(), { method: 'HEAD', cache: 'no-store' });
+        const marque = r.headers.get('Last-Modified') || r.headers.get('Content-Length');
+        if (!marque) return;
+        if (reference === null) reference = marque;
+        else if (marque !== reference) { try { sessionStorage.setItem('position', String(scrollY)); } catch (e) {} location.reload(); }
+      } catch (e) {}
+    };
+    verifier(); setInterval(verifier, 2000);
+    try {   // après un rechargement en direct : on revient au même endroit
+      const y = sessionStorage.getItem('position');
+      if (y !== null) { sessionStorage.removeItem('position'); addEventListener('load', () => scrollTo({ top: +y, behavior: 'instant' })); }
+    } catch (e) {}
   })();
 
   /* =========================================================
