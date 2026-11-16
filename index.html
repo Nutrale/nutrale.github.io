@@ -3,6 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Les couleurs du site sont fixes : on interdit aux navigateurs (Chrome et Samsung Internet sur Android, en thème sombre)
+       de les assombrir eux-mêmes. Le site a déjà ses deux faces, claire (com) et verte (scène). -->
+  <meta name="color-scheme" content="only light">
   <!-- Pas de référencement pour l'instant (site partagé par lien) : retirer cette ligne et robots.txt le jour où le site doit être trouvé sur Google -->
   <meta name="robots" content="noindex, nofollow">
   <title>Lucas Marrec · étudiant en communication et chanteur guitariste</title>
@@ -12,7 +15,7 @@
   <!-- POLICE : FF Providence Sans, envoyée aux visiteurs par le projet Web Adobe Fonts « Portfolio » (Regular et Bold) -->
   <link rel="preconnect" href="https://use.typekit.net" crossorigin>
   <link rel="stylesheet" href="https://use.typekit.net/mpu6bdi.css">
-  <link rel="stylesheet" href="css/style.css?v=133">
+  <link rel="stylesheet" href="css/style.css?v=134">
   <script>
     // Ouvre directement la face scène avec un lien du type …/index.html?mode=scene
     if (new URLSearchParams(location.search).get('mode') === 'scene') document.documentElement.dataset.mode = 'scene';

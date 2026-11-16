@@ -38,6 +38,7 @@ html[data-mode="scene"] .face-com { display: none !important; }
 /* ---------- Base ---------- */
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+:root { color-scheme: only light; }   /* pas d'assombrissement automatique par le navigateur (voir la balise color-scheme de index.html) */
 body {
   margin: 0;
   background: var(--fond);
