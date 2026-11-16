@@ -365,6 +365,12 @@
       enAttente = true;
       requestAnimationFrame(() => { enAttente = false; suivre(); });
     }, { passive: true });
+    // Dès que la page change de hauteur (demande envoyée, filtre, « voir tout »…), le sentier se redessine :
+    // sinon il garde l'ancienne longueur et dépasse sous le pied de page
+    if ('ResizeObserver' in window) {
+      let delai;
+      new ResizeObserver(() => { clearTimeout(delai); delai = setTimeout(construire, 120); }).observe(main);
+    }
     return { construire };
   })();
 
@@ -436,12 +442,14 @@
   });
 
   /* =========================================================
-     SUR SCÈNE : carrousel de photos qu'on attrape à la souris et qu'on fait glisser
+     SUR SCÈNE : carrousel de photos. À la souris : la pastille → en bas à droite avance d'une photo,
+     on peut aussi l'attraper et le faire glisser
      (au doigt ou au pavé tactile, le défilement natif du navigateur suffit)
      ========================================================= */
   (() => {
     const zone = $('#carrousel'), section = $('#live'), barre = $('#live .progression i');
     let appui = false, tire = false, x0 = 0, s0 = 0, xPrec = 0, tPrec = 0, v = 0, elan = null;
+    const suite = $('#live .pastille-suite');   // la pastille → en bas à droite (à la souris)
 
     /* Sur téléphone : la photo du centre en grand, ses voisines en retrait, et le compteur 01 / 06.
        Les tailles suivent directement la position des photos : rien ne penche, rien ne saute. */
@@ -476,6 +484,11 @@
       barre.style.width = part * 100 + '%';
       barre.style.transform = `translateX(${max > 0 ? zone.scrollLeft / max * (1 / part - 1) * 100 : 0}%)`;
       if (zone.scrollLeft > 8) section.classList.add('a-glisse');
+      if (suite) {   // au bout, la pastille se retourne (←) et ramène à la première photo
+        const bout = max > 0 && zone.scrollLeft >= max - 2;
+        suite.classList.toggle('au-bout', bout);
+        suite.setAttribute('aria-label', bout ? 'Revenir à la première photo' : 'Photo suivante');
+      }
     }
 
     zone.addEventListener('pointerdown', e => {
@@ -512,6 +525,15 @@
     zone.addEventListener('pointercancel', lacher);
     zone.addEventListener('pointerleave', () => { if (!tire) appui = false; });
     zone.addEventListener('click', e => { if (tire) { e.preventDefault(); e.stopPropagation(); } }, true);
+    /* La pastille → : une photo de plus à chaque clic ; au bout, retour à la première */
+    suite?.addEventListener('click', () => {
+      cancelAnimationFrame(elan);
+      const c = zone.querySelectorAll('.cliche');
+      const pas = c.length > 1 ? c[1].getBoundingClientRect().left - c[0].getBoundingClientRect().left : zone.clientWidth * .8;
+      const max = zone.scrollWidth - zone.clientWidth;
+      const vers = zone.scrollLeft >= max - 2 ? 0 : Math.min(max, (Math.round(zone.scrollLeft / pas) + 1) * pas);
+      zone.scrollTo({ left: vers, behavior: mouvementReduit.matches ? 'auto' : 'smooth' });
+    });
     zone.addEventListener('wheel', () => cancelAnimationFrame(elan), { passive: true });
     zone.addEventListener('scroll', maj, { passive: true });
     if ('ResizeObserver' in window) new ResizeObserver(maj).observe(zone);   // aussi quand on passe côté scène
@@ -718,6 +740,13 @@
     /* Champ manquant : comme le navigateur, une petite bulle sous le premier champ à compléter,
        mais la nôtre (aux couleurs du site, avec nos mots). Elle s'en va dès qu'on remplit. */
     form.noValidate = true;
+    // Demande partie : le formulaire laisse la place au merci, et le grand titre devient « Demande envoyée »
+    function confirmer() {
+      form.hidden = true; merci.hidden = false;
+      const titre = $('#booking h2');
+      if (titre) titre.textContent = 'Demande envoyée';
+      merci.focus();
+    }
     const emailOk = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
     const CONTROLES = [
       { cible: () => form.querySelector('[name="type"]'), ancre: () => form.querySelector('.pastilles'), centre: true,
@@ -779,7 +808,7 @@
         try {
           const r = await fetch('api/demande', { method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ...Object.fromEntries([...d].filter(([, v]) => typeof v === 'string')), dateIso: form.elements.date.dataset.iso || '' }) });
-          if (r.ok) { form.hidden = true; merci.hidden = false; merci.focus(); return; }
+          if (r.ok) { confirmer(); return; }
           if (r.status === 429 || r.status === 400) throw Object.assign(new Error('refus'), { definitif: true });
         } catch (x) { if (x.definitif) throw x; }
         // 2. Sinon (site hébergé ailleurs) : Netlify Forms
@@ -788,7 +817,7 @@
         if (ics) envoi.set('invitation', ics, ics.name); else envoi.delete('invitation');
         const r = await fetch('/', { method: 'POST', body: envoi });
         if (!r.ok) throw new Error(r.status);
-        form.hidden = true; merci.hidden = false; merci.focus();
+        confirmer();
       } catch (err) {
         // Repli : la messagerie s'ouvre avec la demande rédigée, et la demande est aussi copiée
         // (si aucune messagerie n'est réglée, le visiteur n'a plus qu'à la coller dans un e-mail)

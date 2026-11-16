@@ -22,7 +22,7 @@ window.CONTENU = {
       "Je suis aujourd'hui à l'ISCOM Paris : après un Master 1 Événementiel, influence et réputation, je me spécialise cette année en Master 2 Communication digitale, social media et community management, en alternance chez Capstan Avocats comme chargé de communication et graphisme."
     ],
     "outils": "Illustrator · Photoshop · Premiere · Lightroom · Figma · Canva · Aero",
-    "portrait": "",
+    "portrait": "img/portrait/portrait.jpg",
     "cv": "cv-lucas-marrec.pdf"
   },
   "projets": {
@@ -272,34 +272,6 @@ window.CONTENU = {
         "fichiers": [],
         "une": true,
         "cadrage": "50% 40%"
-      },
-      {
-        "id": "i-mazzeri",
-        "titre": "I Mazzeri",
-        "categorie": "Court métrage · réalisation",
-        "rubriques": [
-          "Vidéo & motion"
-        ],
-        "texte": [
-          "Deux jeunes Corses se plaignent de ne pas vieillir : blessés à la guerre, ils ont survécu et vivent depuis 750 ans. Ils décident d'écrire leur histoire, et avec elle celle de la Corse.",
-          "J'ai réalisé ce court métrage de sept minutes, tourné en équipe au printemps 2023 entre les rues de Corte, le maquis et un appartement, puis je l'ai monté sur Premiere Pro.",
-          "Avec Andria Angeletti et Pierre-François Campana. Image : Florian Beraud. Son : Sylvain Cera. Perche : Kossay Ouerghi. Assistant réalisateur : Florian Pillet."
-        ],
-        "images": [
-          "img/projets/i-mazzeri/01.jpg",
-          "img/projets/i-mazzeri/02.jpg",
-          "img/projets/i-mazzeri/03.jpg",
-          "img/projets/i-mazzeri/04.jpg"
-        ],
-        "fichiers": [
-          {
-            "titre": "Télécharger le film",
-            "url": "fichiers/projets/i-mazzeri-court-metrage.mp4",
-            "poids": "MP4 · 78,4 Mo"
-          }
-        ],
-        "une": true,
-        "cadrage": "80% 50%"
       },
       {
         "id": "logo-rose-noire",
@@ -660,44 +632,44 @@ window.CONTENU = {
       {
         "image": "img/live/01.jpg",
         "description": "Lucas chante et joue de la guitare sur une terrasse fleurie",
-        "lieu": "Fiori Cala Rossa",
-        "date": "Sam 01 août · Cala Rossa",
-        "cadrage": ""
+        "legende": "En terrasse",
+        "cadrage": "",
+        "detail": "en plein jour, au milieu des fleurs"
       },
       {
         "image": "img/live/02.jpg",
         "description": "Concert de nuit sous les guirlandes lumineuses, le public chante",
-        "lieu": "Fiori Cala Rossa",
-        "date": "Sam 01 août · Cala Rossa",
-        "cadrage": ""
+        "legende": "En chœur",
+        "cadrage": "",
+        "detail": "la nuit, sous les guirlandes"
       },
       {
         "image": "img/live/03.jpg",
         "description": "La scène installée avant le concert, au coucher du soleil",
-        "lieu": "U Spuntinu Novu",
-        "date": "Lun 03 août · Saint-Cyprien",
-        "cadrage": ""
+        "legende": "Les balances",
+        "cadrage": "",
+        "detail": "avant l'arrivée des invités"
       },
       {
         "image": "img/live/04.jpg",
         "description": "Lucas joue de la guitare, le regard sur les cordes",
-        "lieu": "Campo di Mare",
-        "date": "Mar 04 août · Pezza Cardo",
-        "cadrage": ""
+        "legende": "Guitare-voix",
+        "cadrage": "",
+        "detail": "les yeux sur les cordes"
       },
       {
         "image": "img/live/05.jpg",
         "description": "Mariage de nuit : les invités chantent et rient face à Lucas",
-        "lieu": "Ambassador",
-        "date": "Mer 05 août · Palombaggia",
-        "cadrage": "65% 50%"
+        "legende": "Le mariage",
+        "cadrage": "65% 50%",
+        "detail": "les invités font cercle"
       },
       {
         "image": "img/live/06.jpg",
         "description": "Lucas joue en plein air, entre les arbres",
-        "lieu": "Prima Stella",
-        "date": "Jeu 06 août · Route de Cala Rossa",
-        "cadrage": ""
+        "legende": "En plein air",
+        "cadrage": "",
+        "detail": "entre les chênes et la pierre"
       }
     ]
   },

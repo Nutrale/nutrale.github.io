@@ -141,7 +141,7 @@ html[data-mode="scene"] .libelle-com { opacity: .4; }
 
 .photo { background: var(--teinte); display: flex; align-items: flex-end; padding: 16px; }
 .photo .caps { font-size: 11px; opacity: .6; }
-.portrait { aspect-ratio: 4 / 5; }
+.portrait { aspect-ratio: 4 / 5; border-radius: 12px; overflow: hidden; }   /* coins arrondis, comme les autres photos */
 .carre { aspect-ratio: 1; }
 
 .bouton {
@@ -367,7 +367,7 @@ html[data-mode="scene"] .accueil .trait { display: none; }
 }
 .cliche { flex: none; display: grid; gap: 14px; width: calc(var(--haut-photo) * .8); margin: 0; }
 .cliche .photo { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 10px; user-select: none; -webkit-user-drag: none; }
-.legende { display: grid; gap: 4px; }
+.legende { display: grid; gap: 4px; }   /* sous la photo : un titre en gras, puis une précision plus discrète */
 .legende b { font-size: 17px; letter-spacing: .06em; line-height: 1.3; }
 .legende small { font-size: 11px; letter-spacing: .24em; text-transform: uppercase; line-height: 1.6; color: var(--texte); }
 img.photo { padding: 0; }
@@ -376,6 +376,23 @@ img.photo { padding: 0; }
 .progression i { position: absolute; left: 0; top: -1px; height: 3px; width: 30%; border-radius: 2px; background: currentColor; }
 .indice { font-size: 11px; white-space: nowrap; transition: opacity .5s; }
 #live.a-glisse .indice { opacity: 0; }
+/* À la souris : une pastille blanche → en bas à droite, à la place de « Glisse → ».
+   Un clic avance d'une photo ; au bout elle se retourne (←) et ramène à la première (js/main.js) */
+.pastille-suite {
+  display: none; place-items: center; flex: none; width: 48px; height: 48px; padding: 0;
+  border: 0; border-radius: 50%; background: var(--blanc); color: var(--vert); cursor: pointer;
+  box-shadow: 0 8px 22px rgba(10, 30, 15, .25);
+}
+.pastille-suite svg { width: 24px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+  transition: translate .3s cubic-bezier(.2, .7, .2, 1), rotate .45s cubic-bezier(.2, .7, .2, 1); }
+.pastille-suite.au-bout svg { rotate: 180deg; }
+.pastille-suite:focus-visible { outline: 2px solid var(--blanc); outline-offset: 3px; }
+@media (hover: hover) and (pointer: fine) {
+  .pastille-suite { display: grid; }
+  .indice { display: none; }
+  .pastille-suite:hover svg { translate: 3px 0; }
+  .pastille-suite.au-bout:hover svg { translate: -3px 0; }
+}
 /* Présentation côté musique : une carte blanche posée sur le vert */
 #presentation .carte {
   position: relative; display: grid; justify-items: center; gap: 18px; max-width: 760px; margin: 0 auto; text-align: center;
@@ -400,19 +417,29 @@ img.photo { padding: 0; }
   #presentation h2 { font-size: 30px; }
 }
 
-/* Sous les photos : Instagram et téléphone en notes manuscrites, avec leur picto dessiné au trait */
-.notes-contact { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px 64px; margin-top: 48px; }
+/* Sous les photos : Instagram et téléphone en deux boutons, comme les autres boutons du site.
+   Instagram plein (blanc), le téléphone au trait ; au survol, une petite flèche glisse au bout du bouton */
+.notes-contact { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 18px; margin-top: 56px; }
 .note-contact {
-  display: inline-flex; align-items: center; gap: 12px;
-  font-size: 22px; letter-spacing: .04em; text-decoration: none; transform: rotate(-2deg);
+  display: inline-flex; align-items: center; gap: 12px; padding: 13px 26px 13px 20px;
+  border: 1.5px solid currentColor; border-radius: 99px;
+  font-size: 18px; letter-spacing: .04em; text-decoration: none;
 }
-.note-contact + .note-contact { transform: rotate(1.5deg); }
-.note-contact svg { width: 34px; height: 34px; flex: none; transition: transform .35s cubic-bezier(.2, .7, .2, 1); }
+.note-contact:first-child { background: var(--encre); color: var(--fond); }
+.note-contact svg { width: 26px; height: 26px; flex: none; }
 .note-contact rect, .note-contact circle, .note-contact path { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round; }
 .note-contact .point { fill: currentColor; stroke: none; }
 .note-contact b { font-weight: 700; }
-.note-contact:hover svg { transform: rotate(-10deg) scale(1.08); }
-.note-contact:hover b { text-decoration: underline; text-underline-offset: 5px; }
+.note-contact::after {   /* la flèche, cachée au repos (largeur nulle, l'écart du flex annulé) */
+  content: '→'; display: inline-block; max-width: 0; overflow: hidden; margin-left: -12px; opacity: 0; translate: -8px 0;
+  transition: max-width .3s cubic-bezier(.2, .7, .2, 1), margin .3s cubic-bezier(.2, .7, .2, 1), opacity .2s, translate .3s cubic-bezier(.2, .7, .2, 1);
+}
+@media (hover: hover) {
+  .note-contact:hover::after { max-width: 1.2em; margin-left: -4px; opacity: 1; translate: 0 0; }
+}
+.note-contact:focus-visible::after { max-width: 1.2em; margin-left: -4px; opacity: 1; translate: 0 0; }
+@media (prefers-reduced-motion: reduce) { .note-contact::after { transition: none; } }
+.note-contact:focus-visible { outline: 2px solid var(--encre); outline-offset: 4px; }
 /* ---------- Contact / booking ---------- */
 .centre { display: grid; justify-items: center; gap: 22px; text-align: center; }
 .centre .bouton { justify-self: center; }
@@ -666,9 +693,9 @@ html:has(.fiche[open]) { overflow: hidden; }   /* la page derrière ne bouge plu
   .intitule { font-size: 24px; }
   #parcours .intitule small { font-size: 16px; letter-spacing: .12em; }
   .rail { gap: 16px; }
-  .notes-contact { flex-direction: column; align-items: center; gap: 22px; }
-  .note-contact { font-size: 18px; gap: 10px; }
-  .note-contact svg { width: 28px; height: 28px; }
+  .notes-contact { flex-direction: column; align-items: stretch; gap: 12px; margin-top: 44px; }
+  .note-contact { justify-content: center; font-size: 16px; gap: 10px; padding: 14px 16px; }
+  .note-contact svg { width: 24px; height: 24px; }
   .carrousel { --haut-photo: clamp(260px, 72vw, 360px); }
 }
 @media (prefers-reduced-motion: reduce) {

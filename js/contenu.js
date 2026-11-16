@@ -109,7 +109,7 @@
     if (rail && Array.isArray(C.live.photos)) rail.innerHTML = C.live.photos.map(ph =>
       `<figure class="cliche"><img class="photo" src="${echapper(ph.image)}" alt="${echapper(ph.description)}" draggable="false" loading="lazy"` +
       (ph.cadrage ? ` style="object-position: ${echapper(ph.cadrage)}"` : '') + `>` +
-      `<figcaption class="legende"><b>${echapper(ph.lieu)}</b><small>${echapper(ph.date)}</small></figcaption></figure>`).join('');
+      (ph.legende || ph.detail ? `<figcaption class="legende"><b>${echapper(ph.legende)}</b><small>${echapper(ph.detail)}</small></figcaption>` : '') + `</figure>`).join('');   // un titre, puis une précision plus discrète
   }
 
   /* ----- Présentation côté musique (la carte blanche) ----- */
